@@ -1,0 +1,484 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pyarrow.flight.FlightServerBase &mdash; Apache Arrow v4.0.0.dev2449+g4b8d1c2fd.d20210403</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pyarrow.flight.GeneratorStream" href="pyarrow.flight.GeneratorStream.html" />
+    <link rel="prev" title="pyarrow.flight.ClientMiddleware" href="pyarrow.flight.ClientMiddleware.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Apache Arrow
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.0.0.dev2449+g4b8d1c2fd.d20210403
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Specifications and Protocols</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Versioning.html">Format Versioning and Stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Columnar.html">Arrow Columnar Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Flight.html">Arrow Flight RPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Integration.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/CDataInterface.html">The Arrow C data interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/CStreamInterface.html">The Arrow C stream interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Other.html">Other Data Structures</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Libraries</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../status.html">Implementation Status</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/c_glib/">C/GLib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cpp/index.html">C++</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/csharp/README.md">C#</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://godoc.org/github.com/apache/arrow/go/arrow">Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../java/index.html">Java</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/js/">JavaScript</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/julia/Arrow/README.md">Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/matlab/README.md">MATLAB</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installing PyArrow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../memory.html">Memory and IO Interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data.html">Data Types and In-Memory Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compute.html">Compute Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gandiva.html">The Gandiva Expression Compiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ipc.html">Streaming, Serialization, and IPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filesystems.html">Filesystem Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filesystems_deprecated.html">Filesystem Interface (legacy)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plasma.html">The Plasma In-Memory Object Store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../numpy.html">NumPy Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pandas.html">Pandas Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../timestamps.html">Timestamps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../csv.html">Reading CSV files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../feather.html">Feather File Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../json.html">Reading JSON files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parquet.html">Reading and Writing the Apache Parquet Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dataset.html">Tabular Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cuda.html">CUDA Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extending_types.html">Extending pyarrow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extending.html">Using pyarrow from C++ and Cython Code</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../api/datatypes.html">Data Types and Schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/arrays.html">Arrays and Scalars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/memory.html">Buffers and Memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/compute.html">Compute Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/gandiva.html">Gandiva Expression Compiler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/files.html">Streams and File Access</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/tables.html">Tables and Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/ipc.html">Serialization and IPC</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../api/flight.html">Arrow Flight</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../api/flight.html#common-types">Common Types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/flight.html#flight-client">Flight Client</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../api/flight.html#flight-server">Flight Server</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/flight.html#authentication">Authentication</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/flight.html#middleware">Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../api/formats.html">Tabular File Formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/filesystems.html">Filesystems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/dataset.html">Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/plasma.html">Plasma In-Memory Object Store</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/cuda.html">CUDA Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/misc.html">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_involved.html">Getting Involved</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/r/">R</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/ruby/README.md">Ruby</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs.rs/crate/arrow/">Rust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/contributing.html">Contributing to Apache Arrow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/cpp/index.html">C++ Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/python.html">Python Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/archery.html">Daily Development using Archery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/crossbow.html">Packaging and Testing with Crossbow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/docker.html">Running Docker Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/documentation.html">Building the Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Apache Arrow</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Python bindings</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../api/flight.html">Arrow Flight</a> &raquo;</li>
+        
+      <li>pyarrow.flight.FlightServerBase</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/python/generated/pyarrow.flight.FlightServerBase.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyarrow-flight-flightserverbase">
+<h1>pyarrow.flight.FlightServerBase<a class="headerlink" href="#pyarrow-flight-flightserverbase" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pyarrow.flight.FlightServerBase">
+<em class="property">class </em><code class="sig-prename descclassname">pyarrow.flight.</code><code class="sig-name descname">FlightServerBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">auth_handler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tls_certificates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verify_client</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">root_certificates</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">middleware</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pyarrow.lib._Weakrefable</span></code></p>
+<p>A Flight service definition.</p>
+<p>Override methods to define your Flight service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>location</strong> (<em>str</em><em>, </em><em>tuple</em><em> or </em><em>Location optional</em><em>, </em><em>default None</em>) – Location to serve on. Either a gRPC URI like <cite>grpc://localhost:port</cite>,
+a tuple of (host, port) pair, or a Location instance.
+If None is passed then the server will be started on localhost with a
+system provided random port.</p></li>
+<li><p><strong>auth_handler</strong> (<em>ServerAuthHandler optional</em><em>, </em><em>default None</em>) – An authentication mechanism to use. May be None.</p></li>
+<li><p><strong>tls_certificates</strong> (<em>list optional</em><em>, </em><em>default None</em>) – A list of (certificate, key) pairs.</p></li>
+<li><p><strong>verify_client</strong> (<em>boolean optional</em><em>, </em><em>default False</em>) – If True, then enable mutual TLS: require the client to present
+a client certificate, and validate the certificate.</p></li>
+<li><p><strong>root_certificates</strong> (<em>bytes optional</em><em>, </em><em>default None</em>) – If enabling mutual TLS, this specifies the PEM-encoded root
+certificate used to validate client certificates.</p></li>
+<li><p><strong>middleware</strong> (<em>list optional</em><em>, </em><em>default None</em>) – A dictionary of <a class="reference internal" href="pyarrow.flight.ServerMiddlewareFactory.html#pyarrow.flight.ServerMiddlewareFactory" title="pyarrow.flight.ServerMiddlewareFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerMiddlewareFactory</span></code></a> items. The
+keys are used to retrieve the middleware instance during calls
+(see <code class="xref py py-meth docutils literal notranslate"><span class="pre">ServerCallContext.get_middleware()</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.__init__" title="pyarrow.flight.FlightServerBase.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.do_action" title="pyarrow.flight.FlightServerBase.do_action"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_action</span></code></a>(self, context, action)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.do_exchange" title="pyarrow.flight.FlightServerBase.do_exchange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_exchange</span></code></a>(self, context, descriptor, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.do_get" title="pyarrow.flight.FlightServerBase.do_get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_get</span></code></a>(self, context, ticket)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.do_put" title="pyarrow.flight.FlightServerBase.do_put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_put</span></code></a>(self, context, descriptor, reader, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.get_flight_info" title="pyarrow.flight.FlightServerBase.get_flight_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flight_info</span></code></a>(self, context, descriptor)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.get_schema" title="pyarrow.flight.FlightServerBase.get_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_schema</span></code></a>(self, context, descriptor)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.list_actions" title="pyarrow.flight.FlightServerBase.list_actions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_actions</span></code></a>(self, context)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.list_flights" title="pyarrow.flight.FlightServerBase.list_flights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_flights</span></code></a>(self, context, criteria)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.run" title="pyarrow.flight.FlightServerBase.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>(self)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.serve" title="pyarrow.flight.FlightServerBase.serve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serve</span></code></a>(self)</p></td>
+<td><p>Start serving.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.shutdown" title="pyarrow.flight.FlightServerBase.shutdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code></a>(self)</p></td>
+<td><p>Shut down the server, blocking until current requests finish.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.wait" title="pyarrow.flight.FlightServerBase.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a>(self)</p></td>
+<td><p>Block until server is terminated with shutdown.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyarrow.flight.FlightServerBase.port" title="pyarrow.flight.FlightServerBase.port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span></code></a></p></td>
+<td><p>Get the port that this server is listening on.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.do_action">
+<code class="sig-name descname">do_action</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">action</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.do_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.do_exchange">
+<code class="sig-name descname">do_exchange</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">descriptor</span></em>, <em class="sig-param"><span class="n">reader</span></em>, <em class="sig-param"><span class="n">writer</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.do_exchange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.do_get">
+<code class="sig-name descname">do_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">ticket</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.do_get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.do_put">
+<code class="sig-name descname">do_put</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">context</em>, <em class="sig-param">descriptor</em>, <em class="sig-param">reader</em>, <em class="sig-param">FlightMetadataWriter writer: FlightMetadataWriter</em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.do_put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.get_flight_info">
+<code class="sig-name descname">get_flight_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">descriptor</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.get_flight_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.get_schema">
+<code class="sig-name descname">get_schema</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">descriptor</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.get_schema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.list_actions">
+<code class="sig-name descname">list_actions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.list_actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.list_flights">
+<code class="sig-name descname">list_flights</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">criteria</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.list_flights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="pyarrow.flight.FlightServerBase.port">
+<code class="sig-name descname">port</code><a class="headerlink" href="#pyarrow.flight.FlightServerBase.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the port that this server is listening on.</p>
+<p>Returns a non-positive value if the operation is invalid
+(e.g. init() was not called or server is listening on a domain
+socket).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.serve">
+<code class="sig-name descname">serve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.serve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start serving.</p>
+<p>This method only returns if shutdown() is called or a signal a
+received.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.shutdown">
+<code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shut down the server, blocking until current requests finish.</p>
+<p>Do not call this directly from the implementation of a Flight
+method, as then the server will block forever waiting for that
+request to finish. Instead, call this method from a background
+thread.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyarrow.flight.FlightServerBase.wait">
+<code class="sig-name descname">wait</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyarrow.flight.FlightServerBase.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block until server is terminated with shutdown.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="pyarrow.flight.GeneratorStream.html" class="btn btn-neutral float-right" title="pyarrow.flight.GeneratorStream" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pyarrow.flight.ClientMiddleware.html" class="btn btn-neutral float-left" title="pyarrow.flight.ClientMiddleware" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2016-2019 Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-107500873-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-107500873-1');
+</script>
+
+
+</body>
+</html>

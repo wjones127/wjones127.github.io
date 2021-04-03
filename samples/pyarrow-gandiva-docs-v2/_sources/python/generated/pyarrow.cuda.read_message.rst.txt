@@ -1,0 +1,6 @@
+pyarrow.cuda.read\_message
+==========================
+
+.. currentmodule:: pyarrow.cuda
+
+.. autoattribute:: read_message
