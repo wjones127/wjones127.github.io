@@ -1,0 +1,22 @@
+pyarrow.gandiva.Condition
+=========================
+
+.. currentmodule:: pyarrow.gandiva
+
+.. autoclass:: Condition
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Condition.__init__
+   
+   
+
+   
+   
+   

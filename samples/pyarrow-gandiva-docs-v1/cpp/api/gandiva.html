@@ -1,0 +1,878 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Gandiva Expression Compiler &mdash; Apache Arrow v4.0.0.dev2449+g4b8d1c2fd.d20210403</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tensors" href="tensor.html" />
+    <link rel="prev" title="Compute Functions" href="compute.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Apache Arrow
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.0.0.dev2449+g4b8d1c2fd.d20210403
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Specifications and Protocols</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Versioning.html">Format Versioning and Stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Columnar.html">Arrow Columnar Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Flight.html">Arrow Flight RPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Integration.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/CDataInterface.html">The Arrow C data interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/CStreamInterface.html">The Arrow C stream interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../format/Other.html">Other Data Structures</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Libraries</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../status.html">Implementation Status</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/c_glib/">C/GLib</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">C++</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">User Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="support.html">Programming Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html">Memory (management)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datatype.html">Data Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array.html">Arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalar.html">Scalars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="builder.html">Array Builders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="table.html">Two-dimensional Datasets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="c_abi.html">C Interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compute.html">Compute Functions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Gandiva Expression Compiler</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#treeexprbuilder-class">TreeExprBuilder Class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-registry">Function registry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#projector">Projector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#filter">Filter</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tensor.html">Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io.html">Input / output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ipc.html">Arrow IPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="formats.html">File Formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cuda.html">CUDA support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flight.html">Arrow Flight RPC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filesystem.html">Filesystems</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/csharp/README.md">C#</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://godoc.org/github.com/apache/arrow/go/arrow">Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../java/index.html">Java</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/js/">JavaScript</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/julia/Arrow/README.md">Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/matlab/README.md">MATLAB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python/index.html">Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/r/">R</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/ruby/README.md">Ruby</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs.rs/crate/arrow/">Rust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/contributing.html">Contributing to Apache Arrow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/cpp/index.html">C++ Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/python.html">Python Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/archery.html">Daily Development using Archery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/crossbow.html">Packaging and Testing with Crossbow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/docker.html">Running Docker Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/documentation.html">Building the Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Apache Arrow</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">C++ Implementation</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+      <li>Gandiva Expression Compiler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/cpp/api/gandiva.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="gandiva-expression-compiler">
+<h1>Gandiva Expression Compiler<a class="headerlink" href="#gandiva-expression-compiler" title="Permalink to this headline">¶</a></h1>
+<div class="sidebar">
+<p class="sidebar-title">Contents</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#treeexprbuilder-class" id="id1">TreeExprBuilder Class</a></p></li>
+<li><p><a class="reference internal" href="#function-registry" id="id2">Function registry</a></p></li>
+<li><p><a class="reference internal" href="#configuration" id="id3">Configuration</a></p></li>
+<li><p><a class="reference internal" href="#projector" id="id4">Projector</a></p></li>
+<li><p><a class="reference internal" href="#filter" id="id5">Filter</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="treeexprbuilder-class">
+<h2><a class="toc-backref" href="#id1">TreeExprBuilder Class</a><a class="headerlink" href="#treeexprbuilder-class" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva15TreeExprBuilderE">
+<span id="_CPPv3N7gandiva15TreeExprBuilderE"></span><span id="_CPPv2N7gandiva15TreeExprBuilderE"></span><span id="gandiva::TreeExprBuilder"></span><span class="target" id="classgandiva_1_1_tree_expr_builder"></span><em class="property">class </em><code class="sig-prename descclassname">gandiva<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">TreeExprBuilder</code><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilderE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Tree Builder for a nested expression. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder11MakeLiteralEb">
+<span id="_CPPv3N7gandiva15TreeExprBuilder11MakeLiteralEb"></span><span id="_CPPv2N7gandiva15TreeExprBuilder11MakeLiteralEb"></span><span id="gandiva::TreeExprBuilder::MakeLiteral__b"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a04a1ef6fe9f36d67067ce93ff786d3e9"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeLiteral</code><span class="sig-paren">(</span>bool <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder11MakeLiteralEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create a node on a literal. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder8MakeNullE11DataTypePtr">
+<span id="_CPPv3N7gandiva15TreeExprBuilder8MakeNullE11DataTypePtr"></span><span id="_CPPv2N7gandiva15TreeExprBuilder8MakeNullE11DataTypePtr"></span><span id="gandiva::TreeExprBuilder::MakeNull__DataTypePtr"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1aaa6d86773fd49a6cbd9b948054f8639d"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeNull</code><span class="sig-paren">(</span>DataTypePtr <em>data_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder8MakeNullE11DataTypePtr" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create a node on a null literal. </p>
+<p>returns null if data_type is null or if it’s not a supported datatype. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder9MakeFieldE8FieldPtr">
+<span id="_CPPv3N7gandiva15TreeExprBuilder9MakeFieldE8FieldPtr"></span><span id="_CPPv2N7gandiva15TreeExprBuilder9MakeFieldE8FieldPtr"></span><span id="gandiva::TreeExprBuilder::MakeField__FieldPtr"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a627e66aedadd483c62c4574e3d56b996"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeField</code><span class="sig-paren">(</span>FieldPtr <em>field</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder9MakeFieldE8FieldPtr" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create a node on arrow field. </p>
+<p>returns null if input is null. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder12MakeFunctionERKNSt6stringERK10NodeVector11DataTypePtr">
+<span id="_CPPv3N7gandiva15TreeExprBuilder12MakeFunctionERKNSt6stringERK10NodeVector11DataTypePtr"></span><span id="_CPPv2N7gandiva15TreeExprBuilder12MakeFunctionERKNSt6stringERK10NodeVector11DataTypePtr"></span><span id="gandiva::TreeExprBuilder::MakeFunction__ssCR.NodeVectorCR.DataTypePtr"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a5af6415984b66fe5ab66eb5bac6fcd38"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeFunction</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>name</em>, <em class="property">const</em> NodeVector &amp;<em>params</em>, DataTypePtr <em>return_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder12MakeFunctionERKNSt6stringERK10NodeVector11DataTypePtr" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create a node with a function. </p>
+<p>returns null if return_type is null </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder6MakeIfE7NodePtr7NodePtr7NodePtr11DataTypePtr">
+<span id="_CPPv3N7gandiva15TreeExprBuilder6MakeIfE7NodePtr7NodePtr7NodePtr11DataTypePtr"></span><span id="_CPPv2N7gandiva15TreeExprBuilder6MakeIfE7NodePtr7NodePtr7NodePtr11DataTypePtr"></span><span id="gandiva::TreeExprBuilder::MakeIf__NodePtr.NodePtr.NodePtr.DataTypePtr"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1ad2d5a05319e424718ab448b58e96570e"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeIf</code><span class="sig-paren">(</span>NodePtr <em>condition</em>, NodePtr <em>then_node</em>, NodePtr <em>else_node</em>, DataTypePtr <em>result_type</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder6MakeIfE7NodePtr7NodePtr7NodePtr11DataTypePtr" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create a node with an if-else expression. </p>
+<p>returns null if any of the inputs is null. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder7MakeAndERK10NodeVector">
+<span id="_CPPv3N7gandiva15TreeExprBuilder7MakeAndERK10NodeVector"></span><span id="_CPPv2N7gandiva15TreeExprBuilder7MakeAndERK10NodeVector"></span><span id="gandiva::TreeExprBuilder::MakeAnd__NodeVectorCR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1af190d76854f6ea9bf1490eac0d855e7c"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeAnd</code><span class="sig-paren">(</span><em class="property">const</em> NodeVector &amp;<em>children</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder7MakeAndERK10NodeVector" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create a node with a boolean AND expression. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder6MakeOrERK10NodeVector">
+<span id="_CPPv3N7gandiva15TreeExprBuilder6MakeOrERK10NodeVector"></span><span id="_CPPv2N7gandiva15TreeExprBuilder6MakeOrERK10NodeVector"></span><span id="gandiva::TreeExprBuilder::MakeOr__NodeVectorCR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a95e9ba77c0b908db4a64dcc67d095751"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeOr</code><span class="sig-paren">(</span><em class="property">const</em> NodeVector &amp;<em>children</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder6MakeOrERK10NodeVector" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create a node with a boolean OR expression. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder14MakeExpressionE7NodePtr8FieldPtr">
+<span id="_CPPv3N7gandiva15TreeExprBuilder14MakeExpressionE7NodePtr8FieldPtr"></span><span id="_CPPv2N7gandiva15TreeExprBuilder14MakeExpressionE7NodePtr8FieldPtr"></span><span id="gandiva::TreeExprBuilder::MakeExpression__NodePtr.FieldPtr"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1adbd17b9a69e6c29bb6f838ef0bf8d4d5"></span><em class="property">static</em> ExpressionPtr <code class="sig-name descname">MakeExpression</code><span class="sig-paren">(</span>NodePtr <em>root_node</em>, FieldPtr <em>result_field</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder14MakeExpressionE7NodePtr8FieldPtr" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create an expression with the specified root_node, and the result written to result_field. </p>
+<p>returns null if the result_field is null. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder14MakeExpressionERKNSt6stringERK11FieldVector8FieldPtr">
+<span id="_CPPv3N7gandiva15TreeExprBuilder14MakeExpressionERKNSt6stringERK11FieldVector8FieldPtr"></span><span id="_CPPv2N7gandiva15TreeExprBuilder14MakeExpressionERKNSt6stringERK11FieldVector8FieldPtr"></span><span id="gandiva::TreeExprBuilder::MakeExpression__ssCR.FieldVectorCR.FieldPtr"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1aba52f83d347ef7b8022c7fb32e0a7e96"></span><em class="property">static</em> ExpressionPtr <code class="sig-name descname">MakeExpression</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>function</em>, <em class="property">const</em> FieldVector &amp;<em>in_fields</em>, FieldPtr <em>out_field</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder14MakeExpressionERKNSt6stringERK11FieldVector8FieldPtr" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>convenience function for simple function expressions. </p>
+<p>returns null if the out_field is null. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder13MakeConditionE7NodePtr">
+<span id="_CPPv3N7gandiva15TreeExprBuilder13MakeConditionE7NodePtr"></span><span id="_CPPv2N7gandiva15TreeExprBuilder13MakeConditionE7NodePtr"></span><span id="gandiva::TreeExprBuilder::MakeCondition__NodePtr"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1afda2d0cfe39189ef159716ae35579a8c"></span><em class="property">static</em> ConditionPtr <code class="sig-name descname">MakeCondition</code><span class="sig-paren">(</span>NodePtr <em>root_node</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder13MakeConditionE7NodePtr" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>create a condition with the specified root_node </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder13MakeConditionERKNSt6stringERK11FieldVector">
+<span id="_CPPv3N7gandiva15TreeExprBuilder13MakeConditionERKNSt6stringERK11FieldVector"></span><span id="_CPPv2N7gandiva15TreeExprBuilder13MakeConditionERKNSt6stringERK11FieldVector"></span><span id="gandiva::TreeExprBuilder::MakeCondition__ssCR.FieldVectorCR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1ad76d6d174df3bf2bdd41a1d58a7498ca"></span><em class="property">static</em> ConditionPtr <code class="sig-name descname">MakeCondition</code><span class="sig-paren">(</span><em class="property">const</em> std::string &amp;<em>function</em>, <em class="property">const</em> FieldVector &amp;<em>in_fields</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder13MakeConditionERKNSt6stringERK11FieldVector" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>convenience function for simple function conditions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder21MakeInExpressionInt32E7NodePtrRKNSt13unordered_setI7int32_tEE">
+<span id="_CPPv3N7gandiva15TreeExprBuilder21MakeInExpressionInt32E7NodePtrRKNSt13unordered_setI7int32_tEE"></span><span id="_CPPv2N7gandiva15TreeExprBuilder21MakeInExpressionInt32E7NodePtrRKNSt13unordered_setI7int32_tEE"></span><span id="gandiva::TreeExprBuilder::MakeInExpressionInt32__NodePtr.std::unordered_set:int32_t:CR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a88bfd64edacf462573b2af45444cc794"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeInExpressionInt32</code><span class="sig-paren">(</span>NodePtr <em>node</em>, <em class="property">const</em> std::unordered_set&lt;int32_t&gt; &amp;<em>constants</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder21MakeInExpressionInt32E7NodePtrRKNSt13unordered_setI7int32_tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>creates an in expression </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder22MakeInExpressionDate32E7NodePtrRKNSt13unordered_setI7int32_tEE">
+<span id="_CPPv3N7gandiva15TreeExprBuilder22MakeInExpressionDate32E7NodePtrRKNSt13unordered_setI7int32_tEE"></span><span id="_CPPv2N7gandiva15TreeExprBuilder22MakeInExpressionDate32E7NodePtrRKNSt13unordered_setI7int32_tEE"></span><span id="gandiva::TreeExprBuilder::MakeInExpressionDate32__NodePtr.std::unordered_set:int32_t:CR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a6bccfce16df34a406e26a0884c0884a9"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeInExpressionDate32</code><span class="sig-paren">(</span>NodePtr <em>node</em>, <em class="property">const</em> std::unordered_set&lt;int32_t&gt; &amp;<em>constants</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder22MakeInExpressionDate32E7NodePtrRKNSt13unordered_setI7int32_tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Date as s/millis since epoch. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder22MakeInExpressionDate64E7NodePtrRKNSt13unordered_setI7int64_tEE">
+<span id="_CPPv3N7gandiva15TreeExprBuilder22MakeInExpressionDate64E7NodePtrRKNSt13unordered_setI7int64_tEE"></span><span id="_CPPv2N7gandiva15TreeExprBuilder22MakeInExpressionDate64E7NodePtrRKNSt13unordered_setI7int64_tEE"></span><span id="gandiva::TreeExprBuilder::MakeInExpressionDate64__NodePtr.std::unordered_set:int64_t:CR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a69f96150da5d7ca6d0ab1807f3347226"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeInExpressionDate64</code><span class="sig-paren">(</span>NodePtr <em>node</em>, <em class="property">const</em> std::unordered_set&lt;int64_t&gt; &amp;<em>constants</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder22MakeInExpressionDate64E7NodePtrRKNSt13unordered_setI7int64_tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Date as millis/us/ns since epoch. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder22MakeInExpressionTime32E7NodePtrRKNSt13unordered_setI7int32_tEE">
+<span id="_CPPv3N7gandiva15TreeExprBuilder22MakeInExpressionTime32E7NodePtrRKNSt13unordered_setI7int32_tEE"></span><span id="_CPPv2N7gandiva15TreeExprBuilder22MakeInExpressionTime32E7NodePtrRKNSt13unordered_setI7int32_tEE"></span><span id="gandiva::TreeExprBuilder::MakeInExpressionTime32__NodePtr.std::unordered_set:int32_t:CR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a871571bf39d27c7d991ee0446c19f7aa"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeInExpressionTime32</code><span class="sig-paren">(</span>NodePtr <em>node</em>, <em class="property">const</em> std::unordered_set&lt;int32_t&gt; &amp;<em>constants</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder22MakeInExpressionTime32E7NodePtrRKNSt13unordered_setI7int32_tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Time as s/millis of day. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder22MakeInExpressionTime64E7NodePtrRKNSt13unordered_setI7int64_tEE">
+<span id="_CPPv3N7gandiva15TreeExprBuilder22MakeInExpressionTime64E7NodePtrRKNSt13unordered_setI7int64_tEE"></span><span id="_CPPv2N7gandiva15TreeExprBuilder22MakeInExpressionTime64E7NodePtrRKNSt13unordered_setI7int64_tEE"></span><span id="gandiva::TreeExprBuilder::MakeInExpressionTime64__NodePtr.std::unordered_set:int64_t:CR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1ac329306ef6fd5a20ae59dee184055113"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeInExpressionTime64</code><span class="sig-paren">(</span>NodePtr <em>node</em>, <em class="property">const</em> std::unordered_set&lt;int64_t&gt; &amp;<em>constants</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder22MakeInExpressionTime64E7NodePtrRKNSt13unordered_setI7int64_tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Time as millis/us/ns of day. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15TreeExprBuilder25MakeInExpressionTimeStampE7NodePtrRKNSt13unordered_setI7int64_tEE">
+<span id="_CPPv3N7gandiva15TreeExprBuilder25MakeInExpressionTimeStampE7NodePtrRKNSt13unordered_setI7int64_tEE"></span><span id="_CPPv2N7gandiva15TreeExprBuilder25MakeInExpressionTimeStampE7NodePtrRKNSt13unordered_setI7int64_tEE"></span><span id="gandiva::TreeExprBuilder::MakeInExpressionTimeStamp__NodePtr.std::unordered_set:int64_t:CR"></span><span class="target" id="classgandiva_1_1_tree_expr_builder_1a74c22fb5f7d32734144cafd312674661"></span><em class="property">static</em> NodePtr <code class="sig-name descname">MakeInExpressionTimeStamp</code><span class="sig-paren">(</span>NodePtr <em>node</em>, <em class="property">const</em> std::unordered_set&lt;int64_t&gt; &amp;<em>constants</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15TreeExprBuilder25MakeInExpressionTimeStampE7NodePtrRKNSt13unordered_setI7int64_tEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Timestamp as millis since epoch. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva4NodeE">
+<span id="_CPPv3N7gandiva4NodeE"></span><span id="_CPPv2N7gandiva4NodeE"></span><span id="gandiva::Node"></span><span class="target" id="classgandiva_1_1_node"></span><em class="property">class </em><code class="sig-prename descclassname">gandiva<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Node</code><a class="headerlink" href="#_CPPv4N7gandiva4NodeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Represents a node in the expression tree. </p>
+<p>Validity and value are in a joined state. </p>
+<p>Subclassed by gandiva::BooleanNode, gandiva::FieldNode, gandiva::FunctionNode, gandiva::IfNode, gandiva::InExpressionNode&lt; Type &gt;, gandiva::LiteralNode</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4NK7gandiva4Node6AcceptER11NodeVisitor">
+<span id="_CPPv3NK7gandiva4Node6AcceptER11NodeVisitor"></span><span id="_CPPv2NK7gandiva4Node6AcceptER11NodeVisitor"></span><span id="gandiva::Node::Accept__NodeVisitorRC"></span><span class="target" id="classgandiva_1_1_node_1a07a1ab1f2c7f363bdd27cbba8387ffa3"></span><em class="property">virtual</em> Status <code class="sig-name descname">Accept</code><span class="sig-paren">(</span>NodeVisitor &amp;<em>visitor</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK7gandiva4Node6AcceptER11NodeVisitor" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Derived classes should simply invoke the Visit api of the visitor. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva10ExpressionE">
+<span id="_CPPv3N7gandiva10ExpressionE"></span><span id="_CPPv2N7gandiva10ExpressionE"></span><span id="gandiva::Expression"></span><span class="target" id="classgandiva_1_1_expression"></span><em class="property">class </em><code class="sig-name descname">Expression</code><a class="headerlink" href="#_CPPv4N7gandiva10ExpressionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>An expression tree with a root node, and a result field. </p>
+<p>Subclassed by <a class="reference internal" href="#classgandiva_1_1_condition"><span class="std std-ref">gandiva::Condition</span></a></p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva9ConditionE">
+<span id="_CPPv3N7gandiva9ConditionE"></span><span id="_CPPv2N7gandiva9ConditionE"></span><span id="gandiva::Condition"></span><span class="target" id="classgandiva_1_1_condition"></span><em class="property">class </em><code class="sig-name descname">Condition</code> : <em class="property">public</em> gandiva::<a class="reference internal" href="#_CPPv4N7gandiva10ExpressionE" title="gandiva::Expression">Expression</a><a class="headerlink" href="#_CPPv4N7gandiva9ConditionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>A condition expression. </p>
+</dd></dl>
+
+</div>
+<div class="section" id="function-registry">
+<h2><a class="toc-backref" href="#id2">Function registry</a><a class="headerlink" href="#function-registry" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva17FunctionSignatureE">
+<span id="_CPPv3N7gandiva17FunctionSignatureE"></span><span id="_CPPv2N7gandiva17FunctionSignatureE"></span><span id="gandiva::FunctionSignature"></span><span class="target" id="classgandiva_1_1_function_signature"></span><em class="property">class </em><code class="sig-prename descclassname">gandiva<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">FunctionSignature</code><a class="headerlink" href="#_CPPv4N7gandiva17FunctionSignatureE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Signature for a function : includes the base name, input param types and output types. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4NK7gandiva17FunctionSignature4HashEv">
+<span id="_CPPv3NK7gandiva17FunctionSignature4HashEv"></span><span id="_CPPv2NK7gandiva17FunctionSignature4HashEv"></span><span id="gandiva::FunctionSignature::HashC"></span><span class="target" id="classgandiva_1_1_function_signature_1a4cb548c0b209a265773902dd1e4c6a06"></span>std::size_t <code class="sig-name descname">Hash</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK7gandiva17FunctionSignature4HashEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>calculated based on name, datatype id of parameters and datatype id of return type. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="configuration">
+<h2><a class="toc-backref" href="#id3">Configuration</a><a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva13ConfigurationE">
+<span id="_CPPv3N7gandiva13ConfigurationE"></span><span id="_CPPv2N7gandiva13ConfigurationE"></span><span id="gandiva::Configuration"></span><span class="target" id="classgandiva_1_1_configuration"></span><em class="property">class </em><code class="sig-name descname">Configuration</code><a class="headerlink" href="#_CPPv4N7gandiva13ConfigurationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>runtime config for gandiva </p>
+<p>It contains elements to customize gandiva execution at run time. </p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva20ConfigurationBuilderE">
+<span id="_CPPv3N7gandiva20ConfigurationBuilderE"></span><span id="_CPPv2N7gandiva20ConfigurationBuilderE"></span><span id="gandiva::ConfigurationBuilder"></span><span class="target" id="classgandiva_1_1_configuration_builder"></span><em class="property">class </em><code class="sig-name descname">ConfigurationBuilder</code><a class="headerlink" href="#_CPPv4N7gandiva20ConfigurationBuilderE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>configuration builder for gandiva </p>
+<p>Provides a default configuration and convenience methods to override specific values and build a custom instance </p>
+</dd></dl>
+
+</div>
+<div class="section" id="projector">
+<h2><a class="toc-backref" href="#id4">Projector</a><a class="headerlink" href="#projector" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva9ProjectorE">
+<span id="_CPPv3N7gandiva9ProjectorE"></span><span id="_CPPv2N7gandiva9ProjectorE"></span><span id="gandiva::Projector"></span><span class="target" id="classgandiva_1_1_projector"></span><em class="property">class </em><code class="sig-prename descclassname">gandiva<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Projector</code><a class="headerlink" href="#_CPPv4N7gandiva9ProjectorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>projection using expressions. </p>
+<p>A projector is built for a specific schema and vector of expressions. Once the projector is built, it can be used to evaluate many row batches. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPN5arrow10MemoryPoolEPN5arrow11ArrayVectorE">
+<span id="_CPPv3N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPN5arrow10MemoryPoolEPN5arrow11ArrayVectorE"></span><span id="_CPPv2N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPN5arrow10MemoryPoolEPN5arrow11ArrayVectorE"></span><span id="gandiva::Projector::Evaluate__arrow::RecordBatchCR.arrow::MemoryPoolP.arrow::ArrayVectorP"></span><span class="target" id="classgandiva_1_1_projector_1ae893931ddae840cea31b1945538545b0"></span>Status <code class="sig-name descname">Evaluate</code><span class="sig-paren">(</span><em class="property">const</em> arrow::<a class="reference internal" href="table.html#_CPPv4N5arrow11RecordBatchE" title="arrow::RecordBatch">RecordBatch</a> &amp;<em>batch</em>, arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow10MemoryPoolE" title="arrow::MemoryPool">MemoryPool</a> *<em>pool</em>, arrow::ArrayVector *<em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPN5arrow10MemoryPoolEPN5arrow11ArrayVectorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate the specified record batch, and return the allocated and populated output arrays. </p>
+<p>The output arrays will be allocated from the memory pool ‘pool’, and added to the vector ‘output’.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">batch</span></code>: the record batch. schema should be the same as the one in ‘Make’ </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">pool</span></code>: memory pool used to allocate output arrays (if required). </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">output</span></code>: the vector of allocated/populated arrays. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchERK15ArrayDataVector">
+<span id="_CPPv3N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchERK15ArrayDataVector"></span><span id="_CPPv2N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchERK15ArrayDataVector"></span><span id="gandiva::Projector::Evaluate__arrow::RecordBatchCR.ArrayDataVectorCR"></span><span class="target" id="classgandiva_1_1_projector_1ae3c8eaa78ea19a4e4aab81f9e287974b"></span>Status <code class="sig-name descname">Evaluate</code><span class="sig-paren">(</span><em class="property">const</em> arrow::<a class="reference internal" href="table.html#_CPPv4N5arrow11RecordBatchE" title="arrow::RecordBatch">RecordBatch</a> &amp;<em>batch</em>, <em class="property">const</em> ArrayDataVector &amp;<em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchERK15ArrayDataVector" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate the specified record batch, and populate the output arrays. </p>
+<p>The output arrays of sufficient capacity must be allocated by the caller.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">batch</span></code>: the record batch. schema should be the same as the one in ‘Make’ </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[inout]</span> <span class="pre">output</span></code>: vector of arrays, the arrays are allocated by the caller and populated by Evaluate. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPK15SelectionVectorPN5arrow10MemoryPoolEPN5arrow11ArrayVectorE">
+<span id="_CPPv3N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPK15SelectionVectorPN5arrow10MemoryPoolEPN5arrow11ArrayVectorE"></span><span id="_CPPv2N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPK15SelectionVectorPN5arrow10MemoryPoolEPN5arrow11ArrayVectorE"></span><span id="gandiva::Projector::Evaluate__arrow::RecordBatchCR.SelectionVectorCP.arrow::MemoryPoolP.arrow::ArrayVectorP"></span><span class="target" id="classgandiva_1_1_projector_1a26f59a3485b66a2ab52687039b6a5f40"></span>Status <code class="sig-name descname">Evaluate</code><span class="sig-paren">(</span><em class="property">const</em> arrow::<a class="reference internal" href="table.html#_CPPv4N5arrow11RecordBatchE" title="arrow::RecordBatch">RecordBatch</a> &amp;<em>batch</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a> *<em>selection_vector</em>, arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow10MemoryPoolE" title="arrow::MemoryPool">MemoryPool</a> *<em>pool</em>, arrow::ArrayVector *<em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPK15SelectionVectorPN5arrow10MemoryPoolEPN5arrow11ArrayVectorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate the specified record batch, and return the allocated and populated output arrays. </p>
+<p>The output arrays will be allocated from the memory pool ‘pool’, and added to the vector ‘output’.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">batch</span></code>: the record batch. schema should be the same as the one in ‘Make’ </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">selection_vector</span></code>: selection vector which has filtered row positions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">pool</span></code>: memory pool used to allocate output arrays (if required). </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">output</span></code>: the vector of allocated/populated arrays. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPK15SelectionVectorRK15ArrayDataVector">
+<span id="_CPPv3N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPK15SelectionVectorRK15ArrayDataVector"></span><span id="_CPPv2N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPK15SelectionVectorRK15ArrayDataVector"></span><span id="gandiva::Projector::Evaluate__arrow::RecordBatchCR.SelectionVectorCP.ArrayDataVectorCR"></span><span class="target" id="classgandiva_1_1_projector_1a6777c47ea9e11c085ba90a111e1d61a5"></span>Status <code class="sig-name descname">Evaluate</code><span class="sig-paren">(</span><em class="property">const</em> arrow::<a class="reference internal" href="table.html#_CPPv4N5arrow11RecordBatchE" title="arrow::RecordBatch">RecordBatch</a> &amp;<em>batch</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a> *<em>selection_vector</em>, <em class="property">const</em> ArrayDataVector &amp;<em>output</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva9Projector8EvaluateERKN5arrow11RecordBatchEPK15SelectionVectorRK15ArrayDataVector" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate the specified record batch, and populate the output arrays at the filtered positions. </p>
+<p>The output arrays of sufficient capacity must be allocated by the caller.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">batch</span></code>: the record batch. schema should be the same as the one in ‘Make’ </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">selection_vector</span></code>: selection vector which has the filtered row positions </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[inout]</span> <span class="pre">output</span></code>: vector of arrays, the arrays are allocated by the caller and populated by Evaluate. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorPNSt10shared_ptrI9ProjectorEE">
+<span id="_CPPv3N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorPNSt10shared_ptrI9ProjectorEE"></span><span id="_CPPv2N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorPNSt10shared_ptrI9ProjectorEE"></span><span id="gandiva::Projector::Make__SchemaPtr.ExpressionVectorCR.std::shared_ptr:Projector:P"></span><span class="target" id="classgandiva_1_1_projector_1a952b4e76cd11a96457cac008aebf4f0e"></span><em class="property">static</em> Status <code class="sig-name descname">Make</code><span class="sig-paren">(</span>SchemaPtr <em>schema</em>, <em class="property">const</em> ExpressionVector &amp;<em>exprs</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva9ProjectorE" title="gandiva::Projector">Projector</a>&gt; *<em>projector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorPNSt10shared_ptrI9ProjectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Build a default projector for the given schema to evaluate the vector of expressions. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">schema</span></code>: schema for the record batches, and the expressions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">exprs</span></code>: vector of expressions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">projector</span></code>: the returned projector object </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorNSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI9ProjectorEE">
+<span id="_CPPv3N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorNSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI9ProjectorEE"></span><span id="_CPPv2N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorNSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI9ProjectorEE"></span><span id="gandiva::Projector::Make__SchemaPtr.ExpressionVectorCR.std::shared_ptr:Configuration:.std::shared_ptr:Projector:P"></span><span class="target" id="classgandiva_1_1_projector_1a7a49c73ad8fa1de31166796075b4ec25"></span><em class="property">static</em> Status <code class="sig-name descname">Make</code><span class="sig-paren">(</span>SchemaPtr <em>schema</em>, <em class="property">const</em> ExpressionVector &amp;<em>exprs</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva13ConfigurationE" title="gandiva::Configuration">Configuration</a>&gt; <em>configuration</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva9ProjectorE" title="gandiva::Projector">Projector</a>&gt; *<em>projector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorNSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI9ProjectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Build a projector for the given schema to evaluate the vector of expressions. </p>
+<p>Customize the projector with runtime configuration.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">schema</span></code>: schema for the record batches, and the expressions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">exprs</span></code>: vector of expressions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">configuration</span></code>: run time configuration. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">projector</span></code>: the returned projector object </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorN15SelectionVector4ModeENSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI9ProjectorEE">
+<span id="_CPPv3N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorN15SelectionVector4ModeENSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI9ProjectorEE"></span><span id="_CPPv2N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorN15SelectionVector4ModeENSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI9ProjectorEE"></span><span id="gandiva::Projector::Make__SchemaPtr.ExpressionVectorCR.SelectionVector::Mode.std::shared_ptr:Configuration:.std::shared_ptr:Projector:P"></span><span class="target" id="classgandiva_1_1_projector_1adb9e3e5ba118bc886776a4063e81a552"></span><em class="property">static</em> Status <code class="sig-name descname">Make</code><span class="sig-paren">(</span>SchemaPtr <em>schema</em>, <em class="property">const</em> ExpressionVector &amp;<em>exprs</em>, <a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>::Mode <em>selection_vector_mode</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva13ConfigurationE" title="gandiva::Configuration">Configuration</a>&gt; <em>configuration</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva9ProjectorE" title="gandiva::Projector">Projector</a>&gt; *<em>projector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva9Projector4MakeE9SchemaPtrRK16ExpressionVectorN15SelectionVector4ModeENSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI9ProjectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Build a projector for the given schema to evaluate the vector of expressions. </p>
+<p>Customize the projector with runtime configuration.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">schema</span></code>: schema for the record batches, and the expressions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">exprs</span></code>: vector of expressions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">selection_vector_mode</span></code>: mode of selection vector </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">configuration</span></code>: run time configuration. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">projector</span></code>: the returned projector object </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="filter">
+<h2><a class="toc-backref" href="#id5">Filter</a><a class="headerlink" href="#filter" title="Permalink to this headline">¶</a></h2>
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva6FilterE">
+<span id="_CPPv3N7gandiva6FilterE"></span><span id="_CPPv2N7gandiva6FilterE"></span><span id="gandiva::Filter"></span><span class="target" id="classgandiva_1_1_filter"></span><em class="property">class </em><code class="sig-prename descclassname">gandiva<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Filter</code><a class="headerlink" href="#_CPPv4N7gandiva6FilterE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>filter records based on a condition. </p>
+<p>A filter is built for a specific schema and condition. Once the filter is built, it can be used to evaluate many row batches. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva6Filter8EvaluateERKN5arrow11RecordBatchENSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva6Filter8EvaluateERKN5arrow11RecordBatchENSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva6Filter8EvaluateERKN5arrow11RecordBatchENSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::Filter::Evaluate__arrow::RecordBatchCR.std::shared_ptr:SelectionVector:"></span><span class="target" id="classgandiva_1_1_filter_1aacb615d7ba59f8871d17eb241e28b750"></span>Status <code class="sig-name descname">Evaluate</code><span class="sig-paren">(</span><em class="property">const</em> arrow::<a class="reference internal" href="table.html#_CPPv4N5arrow11RecordBatchE" title="arrow::RecordBatch">RecordBatch</a> &amp;<em>batch</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; <em>out_selection</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva6Filter8EvaluateERKN5arrow11RecordBatchENSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Evaluate the specified record batch, and populate output selection vector. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">batch</span></code>: the record batch. schema should be the same as the one in ‘Make’ </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[inout]</span> <span class="pre">out_selection</span></code>: the selection array with indices of rows that match the condition. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva6Filter4MakeE9SchemaPtr12ConditionPtrPNSt10shared_ptrI6FilterEE">
+<span id="_CPPv3N7gandiva6Filter4MakeE9SchemaPtr12ConditionPtrPNSt10shared_ptrI6FilterEE"></span><span id="_CPPv2N7gandiva6Filter4MakeE9SchemaPtr12ConditionPtrPNSt10shared_ptrI6FilterEE"></span><span id="gandiva::Filter::Make__SchemaPtr.ConditionPtr.std::shared_ptr:Filter:P"></span><span class="target" id="classgandiva_1_1_filter_1ad4ace313a4b9e7ea22b908249e50fa8e"></span><em class="property">static</em> <em class="property">inline</em> Status <code class="sig-name descname">Make</code><span class="sig-paren">(</span>SchemaPtr <em>schema</em>, ConditionPtr <em>condition</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva6FilterE" title="gandiva::Filter">Filter</a>&gt; *<em>filter</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva6Filter4MakeE9SchemaPtr12ConditionPtrPNSt10shared_ptrI6FilterEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Build a filter for the given schema and condition, with the default configuration. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">schema</span></code>: schema for the record batches, and the condition. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">condition</span></code>: filter condition. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">filter</span></code>: the returned filter object </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva6Filter4MakeE9SchemaPtr12ConditionPtrNSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI6FilterEE">
+<span id="_CPPv3N7gandiva6Filter4MakeE9SchemaPtr12ConditionPtrNSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI6FilterEE"></span><span id="_CPPv2N7gandiva6Filter4MakeE9SchemaPtr12ConditionPtrNSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI6FilterEE"></span><span id="gandiva::Filter::Make__SchemaPtr.ConditionPtr.std::shared_ptr:Configuration:.std::shared_ptr:Filter:P"></span><span class="target" id="classgandiva_1_1_filter_1a21fb6a4e01a7839d72fd333e1603cc1b"></span><em class="property">static</em> Status <code class="sig-name descname">Make</code><span class="sig-paren">(</span>SchemaPtr <em>schema</em>, ConditionPtr <em>condition</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva13ConfigurationE" title="gandiva::Configuration">Configuration</a>&gt; <em>config</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva6FilterE" title="gandiva::Filter">Filter</a>&gt; *<em>filter</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva6Filter4MakeE9SchemaPtr12ConditionPtrNSt10shared_ptrI13ConfigurationEEPNSt10shared_ptrI6FilterEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Build a filter for the given schema and condition. </p>
+<p>Customize the filter with runtime configuration.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">schema</span></code>: schema for the record batches, and the condition. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">condition</span></code>: filter conditions. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">config</span></code>: run time configuration. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">filter</span></code>: the returned filter object </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt id="_CPPv4N7gandiva15SelectionVectorE">
+<span id="_CPPv3N7gandiva15SelectionVectorE"></span><span id="_CPPv2N7gandiva15SelectionVectorE"></span><span id="gandiva::SelectionVector"></span><span class="target" id="classgandiva_1_1_selection_vector"></span><em class="property">class </em><code class="sig-prename descclassname">gandiva<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">SelectionVector</code><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVectorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Selection Vector : vector of indices in a row-batch for a selection, backed by an arrow-array. </p>
+<p>Subclassed by gandiva::SelectionVectorImpl&lt; C_TYPE, A_TYPE, mode &gt;</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4NK7gandiva15SelectionVector8GetIndexE7int64_t">
+<span id="_CPPv3NK7gandiva15SelectionVector8GetIndexE7int64_t"></span><span id="_CPPv2NK7gandiva15SelectionVector8GetIndexE7int64_t"></span><span id="gandiva::SelectionVector::GetIndex__int64_tC"></span><span class="target" id="classgandiva_1_1_selection_vector_1a7b8497cd75aacc89c479f518d28e9cf9"></span><em class="property">virtual</em> uint64_t <code class="sig-name descname">GetIndex</code><span class="sig-paren">(</span>int64_t <em>index</em><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK7gandiva15SelectionVector8GetIndexE7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get the value at a given index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector8SetIndexE7int64_t8uint64_t">
+<span id="_CPPv3N7gandiva15SelectionVector8SetIndexE7int64_t8uint64_t"></span><span id="_CPPv2N7gandiva15SelectionVector8SetIndexE7int64_t8uint64_t"></span><span id="gandiva::SelectionVector::SetIndex__int64_t.uint64_t"></span><span class="target" id="classgandiva_1_1_selection_vector_1ac5f3fa2962e8712dc7e5814917e9cded"></span><em class="property">virtual</em> void <code class="sig-name descname">SetIndex</code><span class="sig-paren">(</span>int64_t <em>index</em>, uint64_t <em>value</em><span class="sig-paren">)</span> = 0<a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector8SetIndexE7int64_t8uint64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set the value at a given index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK7gandiva15SelectionVector11GetMaxSlotsEv">
+<span id="_CPPv3NK7gandiva15SelectionVector11GetMaxSlotsEv"></span><span id="_CPPv2NK7gandiva15SelectionVector11GetMaxSlotsEv"></span><span id="gandiva::SelectionVector::GetMaxSlotsC"></span><span class="target" id="classgandiva_1_1_selection_vector_1ab18dfa9a957ffadee1565d6971040137"></span><em class="property">virtual</em> int64_t <code class="sig-name descname">GetMaxSlots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK7gandiva15SelectionVector11GetMaxSlotsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The maximum slots (capacity) of the selection vector. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK7gandiva15SelectionVector11GetNumSlotsEv">
+<span id="_CPPv3NK7gandiva15SelectionVector11GetNumSlotsEv"></span><span id="_CPPv2NK7gandiva15SelectionVector11GetNumSlotsEv"></span><span id="gandiva::SelectionVector::GetNumSlotsC"></span><span class="target" id="classgandiva_1_1_selection_vector_1a0ef1600a4e7738843e7cad8239c76fc3"></span><em class="property">virtual</em> int64_t <code class="sig-name descname">GetNumSlots</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK7gandiva15SelectionVector11GetNumSlotsEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The number of slots (size) of the selection vector. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector11SetNumSlotsE7int64_t">
+<span id="_CPPv3N7gandiva15SelectionVector11SetNumSlotsE7int64_t"></span><span id="_CPPv2N7gandiva15SelectionVector11SetNumSlotsE7int64_t"></span><span id="gandiva::SelectionVector::SetNumSlots__int64_t"></span><span class="target" id="classgandiva_1_1_selection_vector_1a7957a1440dd78fb262cf5a1c3cefb57d"></span><em class="property">virtual</em> void <code class="sig-name descname">SetNumSlots</code><span class="sig-paren">(</span>int64_t <em>num_slots</em><span class="sig-paren">)</span> = 0<a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector11SetNumSlotsE7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set the number of slots in the selection vector. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK7gandiva15SelectionVector7ToArrayEv">
+<span id="_CPPv3NK7gandiva15SelectionVector7ToArrayEv"></span><span id="_CPPv2NK7gandiva15SelectionVector7ToArrayEv"></span><span id="gandiva::SelectionVector::ToArrayC"></span><span class="target" id="classgandiva_1_1_selection_vector_1a1c6a164f87bb3f45738b970c9f179c7b"></span><em class="property">virtual</em> ArrayPtr <code class="sig-name descname">ToArray</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK7gandiva15SelectionVector7ToArrayEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Convert to arrow-array. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK7gandiva15SelectionVector9GetBufferEv">
+<span id="_CPPv3NK7gandiva15SelectionVector9GetBufferEv"></span><span id="_CPPv2NK7gandiva15SelectionVector9GetBufferEv"></span><span id="gandiva::SelectionVector::GetBufferC"></span><span class="target" id="classgandiva_1_1_selection_vector_1a4311e225fc2867c61dc18b08205792da"></span><em class="property">virtual</em> arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow6BufferE" title="arrow::Buffer">Buffer</a> &amp;<code class="sig-name descname">GetBuffer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK7gandiva15SelectionVector9GetBufferEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get the underlying arrow buffer. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4NK7gandiva15SelectionVector7GetModeEv">
+<span id="_CPPv3NK7gandiva15SelectionVector7GetModeEv"></span><span id="_CPPv2NK7gandiva15SelectionVector7GetModeEv"></span><span id="gandiva::SelectionVector::GetModeC"></span><span class="target" id="classgandiva_1_1_selection_vector_1aaf228faff64d1eb136e887ddd41e72e8"></span><em class="property">virtual</em> Mode <code class="sig-name descname">GetMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em> = 0<a class="headerlink" href="#_CPPv4NK7gandiva15SelectionVector7GetModeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Mode of <a class="reference internal" href="#classgandiva_1_1_selection_vector"><span class="std std-ref">SelectionVector</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector18PopulateFromBitMapEPK7uint8_t7int64_t7int64_t">
+<span id="_CPPv3N7gandiva15SelectionVector18PopulateFromBitMapEPK7uint8_t7int64_t7int64_t"></span><span id="_CPPv2N7gandiva15SelectionVector18PopulateFromBitMapEPK7uint8_t7int64_t7int64_t"></span><span id="gandiva::SelectionVector::PopulateFromBitMap__uint8_tCP.int64_t.int64_t"></span><span class="target" id="classgandiva_1_1_selection_vector_1a71846adb492701c7fe9525c5524c2968"></span>Status <code class="sig-name descname">PopulateFromBitMap</code><span class="sig-paren">(</span><em class="property">const</em> uint8_t *<em>bitmap</em>, int64_t <em>bitmap_size</em>, int64_t <em>max_bitmap_index</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector18PopulateFromBitMapEPK7uint8_t7int64_t7int64_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>populate selection vector for all the set bits in the bitmap. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">bitmap</span></code>: the bitmap </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">bitmap_size</span></code>: size of the bitmap in bytes </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">max_bitmap_index</span></code>: max valid index in bitmap (can be lesser than capacity in the bitmap, due to alignment/padding). </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector9MakeInt16E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva15SelectionVector9MakeInt16E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva15SelectionVector9MakeInt16E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::SelectionVector::MakeInt16__int64_t.std::shared_ptr:arrow::Buffer:.std::shared_ptr:SelectionVector:P"></span><span class="target" id="classgandiva_1_1_selection_vector_1add1b9a060d02e27c2ba9afef59faaa61"></span><em class="property">static</em> Status <code class="sig-name descname">MakeInt16</code><span class="sig-paren">(</span>int64_t <em>max_slots</em>, std::shared_ptr&lt;arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow6BufferE" title="arrow::Buffer">Buffer</a>&gt; <em>buffer</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; *<em>selection_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector9MakeInt16E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>make selection vector with int16 type records. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">max_slots</span></code>: max number of slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">buffer</span></code>: buffer sized to accommodate max_slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">selection_vector</span></code>: selection vector backed by ‘buffer’ </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector9MakeInt16E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva15SelectionVector9MakeInt16E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva15SelectionVector9MakeInt16E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::SelectionVector::MakeInt16__int64_t.arrow::MemoryPoolP.std::shared_ptr:SelectionVector:P"></span><span class="target" id="classgandiva_1_1_selection_vector_1a32ac46a385ec93e8b20d9d4890b1b25c"></span><em class="property">static</em> Status <code class="sig-name descname">MakeInt16</code><span class="sig-paren">(</span>int64_t <em>max_slots</em>, arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow10MemoryPoolE" title="arrow::MemoryPool">MemoryPool</a> *<em>pool</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; *<em>selection_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector9MakeInt16E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">max_slots</span></code>: max number of slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">pool</span></code>: memory pool to allocate buffer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">selection_vector</span></code>: selection vector backed by a buffer allocated from the pool. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector18MakeImmutableInt16E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva15SelectionVector18MakeImmutableInt16E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva15SelectionVector18MakeImmutableInt16E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::SelectionVector::MakeImmutableInt16__int64_t.std::shared_ptr:arrow::Buffer:.std::shared_ptr:SelectionVector:P"></span><span class="target" id="classgandiva_1_1_selection_vector_1a8a0c2f951b442e3be2cb522bd78578f3"></span><em class="property">static</em> Status <code class="sig-name descname">MakeImmutableInt16</code><span class="sig-paren">(</span>int64_t <em>num_slots</em>, std::shared_ptr&lt;arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow6BufferE" title="arrow::Buffer">Buffer</a>&gt; <em>buffer</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; *<em>selection_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector18MakeImmutableInt16E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>creates a selection vector with pre populated buffer. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">num_slots</span></code>: size of the selection vector </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">buffer</span></code>: pre-populated buffer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">selection_vector</span></code>: selection vector backed by ‘buffer’ </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector9MakeInt32E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva15SelectionVector9MakeInt32E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva15SelectionVector9MakeInt32E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::SelectionVector::MakeInt32__int64_t.std::shared_ptr:arrow::Buffer:.std::shared_ptr:SelectionVector:P"></span><span class="target" id="classgandiva_1_1_selection_vector_1a65b36370ae6b033985d6cc7d26d34f4c"></span><em class="property">static</em> Status <code class="sig-name descname">MakeInt32</code><span class="sig-paren">(</span>int64_t <em>max_slots</em>, std::shared_ptr&lt;arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow6BufferE" title="arrow::Buffer">Buffer</a>&gt; <em>buffer</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; *<em>selection_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector9MakeInt32E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>make selection vector with int32 type records. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">max_slots</span></code>: max number of slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">buffer</span></code>: buffer sized to accommodate max_slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">selection_vector</span></code>: selection vector backed by ‘buffer’ </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector9MakeInt32E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva15SelectionVector9MakeInt32E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva15SelectionVector9MakeInt32E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::SelectionVector::MakeInt32__int64_t.arrow::MemoryPoolP.std::shared_ptr:SelectionVector:P"></span><span class="target" id="classgandiva_1_1_selection_vector_1a36b86acc4bf05b854e8f85a6eafe4e4f"></span><em class="property">static</em> Status <code class="sig-name descname">MakeInt32</code><span class="sig-paren">(</span>int64_t <em>max_slots</em>, arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow10MemoryPoolE" title="arrow::MemoryPool">MemoryPool</a> *<em>pool</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; *<em>selection_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector9MakeInt32E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>make selection vector with int32 type records. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">max_slots</span></code>: max number of slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">pool</span></code>: memory pool to allocate buffer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">selection_vector</span></code>: selection vector backed by a buffer allocated from the pool. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector18MakeImmutableInt32E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva15SelectionVector18MakeImmutableInt32E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva15SelectionVector18MakeImmutableInt32E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::SelectionVector::MakeImmutableInt32__int64_t.std::shared_ptr:arrow::Buffer:.std::shared_ptr:SelectionVector:P"></span><span class="target" id="classgandiva_1_1_selection_vector_1a35c01e27b6c7b3518896d8166f454393"></span><em class="property">static</em> Status <code class="sig-name descname">MakeImmutableInt32</code><span class="sig-paren">(</span>int64_t <em>num_slots</em>, std::shared_ptr&lt;arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow6BufferE" title="arrow::Buffer">Buffer</a>&gt; <em>buffer</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; *<em>selection_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector18MakeImmutableInt32E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>creates a selection vector with pre populated buffer. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">num_slots</span></code>: size of the selection vector </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">buffer</span></code>: pre-populated buffer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">selection_vector</span></code>: selection vector backed by ‘buffer’ </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector9MakeInt64E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva15SelectionVector9MakeInt64E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva15SelectionVector9MakeInt64E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::SelectionVector::MakeInt64__int64_t.std::shared_ptr:arrow::Buffer:.std::shared_ptr:SelectionVector:P"></span><span class="target" id="classgandiva_1_1_selection_vector_1af32f8d25016469a1eab587654a9c119b"></span><em class="property">static</em> Status <code class="sig-name descname">MakeInt64</code><span class="sig-paren">(</span>int64_t <em>max_slots</em>, std::shared_ptr&lt;arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow6BufferE" title="arrow::Buffer">Buffer</a>&gt; <em>buffer</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; *<em>selection_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector9MakeInt64E7int64_tNSt10shared_ptrIN5arrow6BufferEEEPNSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>make selection vector with int64 type records. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">max_slots</span></code>: max number of slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">buffer</span></code>: buffer sized to accommodate max_slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">selection_vector</span></code>: selection vector backed by ‘buffer’ </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N7gandiva15SelectionVector9MakeInt64E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE">
+<span id="_CPPv3N7gandiva15SelectionVector9MakeInt64E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="_CPPv2N7gandiva15SelectionVector9MakeInt64E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE"></span><span id="gandiva::SelectionVector::MakeInt64__int64_t.arrow::MemoryPoolP.std::shared_ptr:SelectionVector:P"></span><span class="target" id="classgandiva_1_1_selection_vector_1a307350968cdcdbd868b22eec140249dc"></span><em class="property">static</em> Status <code class="sig-name descname">MakeInt64</code><span class="sig-paren">(</span>int64_t <em>max_slots</em>, arrow::<a class="reference internal" href="memory.html#_CPPv4N5arrow10MemoryPoolE" title="arrow::MemoryPool">MemoryPool</a> *<em>pool</em>, std::shared_ptr&lt;<a class="reference internal" href="#_CPPv4N7gandiva15SelectionVectorE" title="gandiva::SelectionVector">SelectionVector</a>&gt; *<em>selection_vector</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7gandiva15SelectionVector9MakeInt64E7int64_tPN5arrow10MemoryPoolEPNSt10shared_ptrI15SelectionVectorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>make selection vector with int64 type records. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">max_slots</span></code>: max number of slots </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">pool</span></code>: memory pool to allocate buffer </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">selection_vector</span></code>: selection vector backed by a buffer allocated from the pool. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="tensor.html" class="btn btn-neutral float-right" title="Tensors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="compute.html" class="btn btn-neutral float-left" title="Compute Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2016-2019 Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-107500873-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-107500873-1');
+</script>
+
+
+</body>
+</html>

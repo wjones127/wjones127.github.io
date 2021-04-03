@@ -1,0 +1,408 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>The Gandiva Expression Compiler &mdash; Apache Arrow v4.0.0.dev2449+g4b8d1c2fd.d20210403</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Streaming, Serialization, and IPC" href="ipc.html" />
+    <link rel="prev" title="Compute Functions" href="compute.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Apache Arrow
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                4.0.0.dev2449+g4b8d1c2fd.d20210403
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Specifications and Protocols</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../format/Versioning.html">Format Versioning and Stability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../format/Columnar.html">Arrow Columnar Format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../format/Flight.html">Arrow Flight RPC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../format/Integration.html">Integration Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../format/CDataInterface.html">The Arrow C data interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../format/CStreamInterface.html">The Arrow C stream interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../format/Other.html">Other Data Structures</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Libraries</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../status.html">Implementation Status</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/c_glib/">C/GLib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp/index.html">C++</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/csharp/README.md">C#</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://godoc.org/github.com/apache/arrow/go/arrow">Go</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../java/index.html">Java</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/js/">JavaScript</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/julia/Arrow/README.md">Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/matlab/README.md">MATLAB</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installing PyArrow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html">Memory and IO Interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data Types and In-Memory Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute.html">Compute Functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Gandiva Expression Compiler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-gandiva-expressions">Building Gandiva Expressions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#executing-filter-expressions">Executing Filter Expressions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#executing-projection-expressions">Executing Projection Expressions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ipc.html">Streaming, Serialization, and IPC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filesystems.html">Filesystem Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filesystems_deprecated.html">Filesystem Interface (legacy)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plasma.html">The Plasma In-Memory Object Store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="numpy.html">NumPy Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pandas.html">Pandas Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timestamps.html">Timestamps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csv.html">Reading CSV files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="feather.html">Feather File Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json.html">Reading JSON files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parquet.html">Reading and Writing the Apache Parquet Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset.html">Tabular Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cuda.html">CUDA Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending_types.html">Extending pyarrow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending.html">Using pyarrow from C++ and Cython Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_involved.html">Getting Involved</a></li>
+<li class="toctree-l2"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://arrow.apache.org/docs/r/">R</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/apache/arrow/blob/master/ruby/README.md">Ruby</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://docs.rs/crate/arrow/">Rust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/contributing.html">Contributing to Apache Arrow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/cpp/index.html">C++ Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/python.html">Python Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/archery.html">Daily Development using Archery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/crossbow.html">Packaging and Testing with Crossbow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/docker.html">Running Docker Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers/documentation.html">Building the Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Apache Arrow</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Python bindings</a> &raquo;</li>
+        
+      <li>The Gandiva Expression Compiler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/python/gandiva.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-gandiva-expression-compiler">
+<span id="gandiva"></span><h1><a class="toc-backref" href="#id1">The Gandiva Expression Compiler</a><a class="headerlink" href="#the-gandiva-expression-compiler" title="Permalink to this headline">¶</a></h1>
+<p>Gandiva is an expression compiler that uses <a class="reference external" href="https://llvm.org/">LLVM</a> to generate efficient native
+code for projections and filters on Arrow record batches.</p>
+<p>Using Gandiva involves three steps. First, you use the <a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder" title="pyarrow.gandiva.TreeExprBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeExprBuilder</span></code></a> to
+build a condition to filter on or a set of expressions to project rows. The builder provides
+a library of functions that can be composed into complex expressions. Second,
+you create a <a class="reference internal" href="generated/pyarrow.gandiva.Filter.html#pyarrow.gandiva.Filter" title="pyarrow.gandiva.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a> or <a class="reference internal" href="generated/pyarrow.gandiva.Projector.html#pyarrow.gandiva.Projector" title="pyarrow.gandiva.Projector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Projector</span></code></a> from the expression. This step
+compiles your expression into efficient native code. Finally, you use the filter or
+projector you created to operate on Arrow record batches.</p>
+<div class="contents topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-gandiva-expression-compiler" id="id1">The Gandiva Expression Compiler</a></p>
+<ul>
+<li><p><a class="reference internal" href="#building-gandiva-expressions" id="id2">Building Gandiva Expressions</a></p></li>
+<li><p><a class="reference internal" href="#executing-filter-expressions" id="id3">Executing Filter Expressions</a></p></li>
+<li><p><a class="reference internal" href="#executing-projection-expressions" id="id4">Executing Projection Expressions</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As present, Gandiva is only built on PyArrow Conda distributions, not PyPI wheels.</p>
+</div>
+<div class="section" id="building-gandiva-expressions">
+<h2><a class="toc-backref" href="#id2">Building Gandiva Expressions</a><a class="headerlink" href="#building-gandiva-expressions" title="Permalink to this headline">¶</a></h2>
+<p>Gandiva expressions are built with <a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder" title="pyarrow.gandiva.TreeExprBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeExprBuilder</span></code></a>. For example,
+to express <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">&lt;</span> <span class="pre">x</span> <span class="pre">&lt;</span> <span class="pre">3</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+<span class="kn">from</span> <span class="nn">pyarrow.gandiva</span> <span class="kn">import</span> <span class="n">TreeExprBuilder</span>
+
+<span class="n">builder</span> <span class="o">=</span> <span class="n">TreeExprBuilder</span><span class="p">()</span>
+
+<span class="n">field_x</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_field</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">()))</span>
+<span class="n">scalar_2</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_literal</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">())</span>
+<span class="n">scalar_3</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_literal</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">())</span>
+
+<span class="n">expr</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_and</span><span class="p">([</span>
+    <span class="n">builder</span><span class="o">.</span><span class="n">make_function</span><span class="p">(</span><span class="s1">&#39;greater_than&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">field_x</span><span class="p">,</span> <span class="n">scalar_2</span><span class="p">],</span> <span class="n">pa</span><span class="o">.</span><span class="n">bool_</span><span class="p">()),</span>
+    <span class="n">builder</span><span class="o">.</span><span class="n">make_function</span><span class="p">(</span><span class="s1">&#39;less_than&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">field_x</span><span class="p">,</span> <span class="n">scalar_3</span><span class="p">],</span> <span class="n">pa</span><span class="o">.</span><span class="n">bool_</span><span class="p">())</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>Each of the builder methods returns a new <a class="reference internal" href="generated/pyarrow.gandiva.Node.html#pyarrow.gandiva.Node" title="pyarrow.gandiva.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a> in the expression
+tree. This includes:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder.make_field" title="pyarrow.gandiva.TreeExprBuilder.make_field"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeExprBuilder.make_field()</span></code></a> creates a field node: a reference to a
+column in the record batches. The type must match the type of the array in
+that column.</p></li>
+<li><p><a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder.make_literal" title="pyarrow.gandiva.TreeExprBuilder.make_literal"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeExprBuilder.make_literal()</span></code></a> creates a literal node: a literal value
+hardcoded.</p></li>
+<li><p><a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder.make_function" title="pyarrow.gandiva.TreeExprBuilder.make_function"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeExprBuilder.make_function()</span></code></a> creates a function node, which may
+take other nodes as arguments.
+<a class="reference internal" href="../cpp/gandiva.html#gandiva-function-list"><span class="std std-ref">See available functions (C++ documentation)</span></a>.</p></li>
+<li><p><a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder.make_if" title="pyarrow.gandiva.TreeExprBuilder.make_if"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeExprBuilder.make_if()</span></code></a>, <a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder.make_and" title="pyarrow.gandiva.TreeExprBuilder.make_and"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeExprBuilder.make_and()</span></code></a>, and
+<a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder.make_or" title="pyarrow.gandiva.TreeExprBuilder.make_or"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeExprBuilder.make_or()</span></code></a> create new nodes based on if-else, boolean
+“and”, and boolean “or” logic. (For “not”, use the <code class="docutils literal notranslate"><span class="pre">not(bool)</span></code> function in
+<code class="docutils literal notranslate"><span class="pre">make_function</span></code>.)</p></li>
+</ul>
+</div>
+<div class="section" id="executing-filter-expressions">
+<h2><a class="toc-backref" href="#id3">Executing Filter Expressions</a><a class="headerlink" href="#executing-filter-expressions" title="Permalink to this headline">¶</a></h2>
+<p>To create a filter, you can convert a boolean expression node into a <a class="reference internal" href="generated/pyarrow.gandiva.Condition.html#pyarrow.gandiva.Condition" title="pyarrow.gandiva.Condition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Condition</span></code></a>,
+and instantiate the Gandiva filter using <a class="reference internal" href="generated/pyarrow.gandiva.make_filter.html#pyarrow.gandiva.make_filter" title="pyarrow.gandiva.make_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_filter()</span></code></a>. When creating the filter
+instance, the expression is converted into LLVM IR and optimized, allowing it to
+be reused for multiple record batches.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+<span class="kn">from</span> <span class="nn">pyarrow.gandiva</span> <span class="kn">import</span> <span class="n">TreeExprBuilder</span><span class="p">,</span> <span class="n">make_filter</span>
+
+<span class="n">builder</span> <span class="o">=</span> <span class="n">TreeExprBuilder</span><span class="p">()</span>
+
+<span class="n">field_x</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_field</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">()))</span>
+<span class="n">scalar_2</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_literal</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">())</span>
+<span class="n">expr</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_function</span><span class="p">(</span><span class="s1">&#39;greater_than&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">field_x</span><span class="p">,</span> <span class="n">scalar_2</span><span class="p">],</span> <span class="n">pa</span><span class="o">.</span><span class="n">bool_</span><span class="p">())</span>
+
+<span class="n">condition</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_condition</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+
+<span class="n">record_batch</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">record_batch</span><span class="p">([</span><span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">())],</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+<span class="n">filter_executor</span> <span class="o">=</span> <span class="n">make_filter</span><span class="p">(</span><span class="n">record_batch</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">condition</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="generated/pyarrow.gandiva.Filter.html#pyarrow.gandiva.Filter.evaluate" title="pyarrow.gandiva.Filter.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Filter.evaluate()</span></code></a> method runs the filter on a record batch. It
+returns a <a class="reference internal" href="generated/pyarrow.gandiva.SelectionVector.html#pyarrow.gandiva.SelectionVector" title="pyarrow.gandiva.SelectionVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">SelectionVector</span></code></a>, which contains the indices of the
+matching rows. This can either be used later when projecting rows with
+<a class="reference internal" href="generated/pyarrow.gandiva.Projector.html#pyarrow.gandiva.Projector.evaluate" title="pyarrow.gandiva.Projector.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Projector.evaluate()</span></code></a> or can be used to immediately filter the record
+batch by converting into an Arrow array with <a class="reference internal" href="generated/pyarrow.gandiva.SelectionVector.html#pyarrow.gandiva.SelectionVector.to_array" title="pyarrow.gandiva.SelectionVector.to_array"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SelectionVector.to_array()</span></code></a>
+and using with the <a class="reference internal" href="generated/pyarrow.RecordBatch.html#pyarrow.RecordBatch.take" title="pyarrow.RecordBatch.take"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyarrow.RecordBatch.take()</span></code></a> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">selection_vector</span> <span class="o">=</span> <span class="n">filter_executor</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">record_batch</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">default_memory_pool</span><span class="p">())</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">record_batch</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">selection_vector</span><span class="o">.</span><span class="n">to_array</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="executing-projection-expressions">
+<h2><a class="toc-backref" href="#id4">Executing Projection Expressions</a><a class="headerlink" href="#executing-projection-expressions" title="Permalink to this headline">¶</a></h2>
+<p>To create a <a class="reference internal" href="generated/pyarrow.gandiva.Projector.html#pyarrow.gandiva.Projector" title="pyarrow.gandiva.Projector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Projector</span></code></a>, convert nodes into expressions using
+<a class="reference internal" href="generated/pyarrow.gandiva.TreeExprBuilder.html#pyarrow.gandiva.TreeExprBuilder.make_expression" title="pyarrow.gandiva.TreeExprBuilder.make_expression"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TreeExprBuilder.make_expression()</span></code></a> and then pass that list into the
+<a class="reference internal" href="generated/pyarrow.gandiva.make_projector.html#pyarrow.gandiva.make_projector" title="pyarrow.gandiva.make_projector"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_projector()</span></code></a> function. For example, to project a record batch
+with a float <code class="docutils literal notranslate"><span class="pre">x</span></code> into one with <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">log(x)</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyarrow</span> <span class="k">as</span> <span class="nn">pa</span>
+<span class="kn">from</span> <span class="nn">pyarrow.gandiva</span> <span class="kn">import</span> <span class="n">TreeExprBuilder</span><span class="p">,</span> <span class="n">make_projector</span>
+
+<span class="n">builder</span> <span class="o">=</span> <span class="n">TreeExprBuilder</span><span class="p">()</span>
+
+<span class="n">field_x</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_field</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">()))</span>
+<span class="n">log_x</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">make_function</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">field_x</span><span class="p">],</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">())</span>
+
+<span class="n">expressions</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="n">builder</span><span class="o">.</span><span class="n">make_expression</span><span class="p">(</span><span class="n">field_x</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">())),</span>
+  <span class="n">builder</span><span class="o">.</span><span class="n">make_expression</span><span class="p">(</span><span class="n">log_x</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="s1">&#39;log_x&#39;</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">()))</span>
+<span class="p">]</span>
+
+<span class="n">record_batch</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">record_batch</span><span class="p">([</span><span class="n">pa</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">pa</span><span class="o">.</span><span class="n">float64</span><span class="p">())],</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+<span class="n">projector</span> <span class="o">=</span> <span class="n">make_projector</span><span class="p">(</span><span class="n">record_batch</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">expressions</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">default_memory_pool</span><span class="p">())</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">projector</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">record_batch</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="ipc.html" class="btn btn-neutral float-right" title="Streaming, Serialization, and IPC" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="compute.html" class="btn btn-neutral float-left" title="Compute Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2016-2019 Apache Software Foundation.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-107500873-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-107500873-1');
+</script>
+
+
+</body>
+</html>
