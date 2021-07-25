@@ -1,0 +1,6 @@
+pyarrow.compute.sin\_checked
+============================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: sin_checked

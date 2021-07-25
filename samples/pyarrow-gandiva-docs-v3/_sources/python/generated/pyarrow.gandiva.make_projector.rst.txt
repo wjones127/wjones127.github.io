@@ -1,0 +1,6 @@
+pyarrow.gandiva.make\_projector
+===============================
+
+.. currentmodule:: pyarrow.gandiva
+
+.. autofunction:: make_projector

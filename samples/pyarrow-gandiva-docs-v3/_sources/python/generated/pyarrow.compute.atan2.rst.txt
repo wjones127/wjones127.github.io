@@ -1,0 +1,6 @@
+pyarrow.compute.atan2
+=====================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: atan2

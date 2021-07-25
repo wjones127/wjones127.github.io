@@ -1,0 +1,6 @@
+pyarrow.compute.ascii\_ltrim
+============================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: ascii_ltrim

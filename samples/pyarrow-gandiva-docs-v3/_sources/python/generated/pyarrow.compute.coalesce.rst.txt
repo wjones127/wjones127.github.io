@@ -1,0 +1,6 @@
+pyarrow.compute.coalesce
+========================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: coalesce

@@ -1,0 +1,6 @@
+pyarrow.gandiva.get\_registered\_function\_signatures
+=====================================================
+
+.. currentmodule:: pyarrow.gandiva
+
+.. autofunction:: get_registered_function_signatures

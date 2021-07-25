@@ -1,0 +1,6 @@
+pyarrow.compute.abs\_checked
+============================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: abs_checked

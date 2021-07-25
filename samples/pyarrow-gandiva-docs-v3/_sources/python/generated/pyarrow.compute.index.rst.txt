@@ -1,0 +1,6 @@
+pyarrow.compute.index
+=====================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: index

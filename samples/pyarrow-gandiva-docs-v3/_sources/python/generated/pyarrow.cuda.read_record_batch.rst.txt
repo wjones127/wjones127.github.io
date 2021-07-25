@@ -1,0 +1,6 @@
+pyarrow.cuda.read\_record\_batch
+================================
+
+.. currentmodule:: pyarrow.cuda
+
+.. autoattribute:: read_record_batch

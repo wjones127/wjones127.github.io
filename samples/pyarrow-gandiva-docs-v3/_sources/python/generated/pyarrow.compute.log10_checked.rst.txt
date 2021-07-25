@@ -1,0 +1,6 @@
+pyarrow.compute.log10\_checked
+==============================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: log10_checked

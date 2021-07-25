@@ -1,0 +1,6 @@
+pyarrow.compute.case\_when
+==========================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: case_when

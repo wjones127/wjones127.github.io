@@ -1,0 +1,29 @@
+pyarrow.gandiva.Filter
+======================
+
+.. currentmodule:: pyarrow.gandiva
+
+.. autoclass:: Filter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Filter.__init__
+      ~Filter.evaluate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Filter.llvm_ir
+   
+   

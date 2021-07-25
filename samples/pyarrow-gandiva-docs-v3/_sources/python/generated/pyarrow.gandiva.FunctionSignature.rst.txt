@@ -1,0 +1,25 @@
+pyarrow.gandiva.FunctionSignature
+=================================
+
+.. currentmodule:: pyarrow.gandiva
+
+.. autoclass:: FunctionSignature
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FunctionSignature.__init__
+      ~FunctionSignature.name
+      ~FunctionSignature.param_types
+      ~FunctionSignature.return_type
+   
+   
+
+   
+   
+   
