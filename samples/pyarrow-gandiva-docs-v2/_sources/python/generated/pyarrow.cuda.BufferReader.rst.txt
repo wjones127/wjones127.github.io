@@ -1,6 +1,0 @@
-pyarrow.cuda.BufferReader
-=========================
-
-.. currentmodule:: pyarrow.cuda
-
-.. autoattribute:: BufferReader

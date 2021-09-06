@@ -1,6 +1,0 @@
-pyarrow.cuda.new\_host\_buffer
-==============================
-
-.. currentmodule:: pyarrow.cuda
-
-.. autoattribute:: new_host_buffer

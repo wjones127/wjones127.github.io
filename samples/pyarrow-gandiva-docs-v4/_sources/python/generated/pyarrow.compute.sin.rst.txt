@@ -1,0 +1,6 @@
+pyarrow.compute.sin
+===================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: sin

@@ -1,0 +1,6 @@
+pyarrow.compute.power
+=====================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: power

@@ -1,0 +1,6 @@
+pyarrow.compute.ascii\_rpad
+===========================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: ascii_rpad

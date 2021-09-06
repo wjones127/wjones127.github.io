@@ -1,0 +1,32 @@
+Common Types
+------------
+
+To be succinct, we describe the types in the following groups:
+
+ * Integer: ``int8``, ``int16``, ``int32``, ``int64``, ``uint8``, ``uint16``, ``uint32``, ``uint64``
+ * Float: ``float``, ``double``
+ * Decimal: ``decimal128``
+ * Numeric: Integer or Float or Decimal
+ * Date: ``date64[ms]``, ``date32[day]``
+ * Time: ``time32[ms]``
+ * Timestamp: ``timestamp[ms]``
+
+
+
+
+
+String Transformations
+----------------------
+
+.. list-table::
+
+  * - convert_fromUTF8
+    - ``(binary)`` -> ``string``
+  * - convert_fromutf8
+    - ``(binary)`` -> ``string``
+  * - convert_replaceUTF8
+    - ``(binary, string)`` -> ``string``
+  * - convert_replaceutf8
+    - ``(binary, string)`` -> ``string``
+  * - convert_toUTF8
+    - ``(string)`` -> ``binary``

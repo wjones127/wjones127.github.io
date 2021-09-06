@@ -1,6 +1,0 @@
-pyarrow.gandiva.make\_filter
-============================
-
-.. currentmodule:: pyarrow.gandiva
-
-.. autofunction:: make_filter

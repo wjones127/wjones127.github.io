@@ -1,0 +1,23 @@
+pyarrow.gandiva.Node
+====================
+
+.. currentmodule:: pyarrow.gandiva
+
+.. autoclass:: Node
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Node.__init__
+      ~Node.return_type
+   
+   
+
+   
+   
+   

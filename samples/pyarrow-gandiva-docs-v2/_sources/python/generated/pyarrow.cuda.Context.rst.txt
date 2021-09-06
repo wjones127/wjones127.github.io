@@ -1,6 +1,0 @@
-pyarrow.cuda.Context
-====================
-
-.. currentmodule:: pyarrow.cuda
-
-.. autoattribute:: Context

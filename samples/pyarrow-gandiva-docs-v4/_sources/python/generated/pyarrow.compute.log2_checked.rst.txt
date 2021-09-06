@@ -1,0 +1,6 @@
+pyarrow.compute.log2\_checked
+=============================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: log2_checked

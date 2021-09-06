@@ -1,6 +1,0 @@
-pyarrow.cuda.CudaBuffer
-=======================
-
-.. currentmodule:: pyarrow.cuda
-
-.. autoattribute:: CudaBuffer

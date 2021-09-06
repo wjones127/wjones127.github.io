@@ -1,0 +1,6 @@
+pyarrow.compute.power\_checked
+==============================
+
+.. currentmodule:: pyarrow.compute
+
+.. autofunction:: power_checked
